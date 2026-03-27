@@ -1,0 +1,8 @@
+Flow:
+
+User uploads an image or provides input
+The frontend sends the image to the backend via HTTP request
+The backend preprocesses the image
+The AI model processes the image and performs object detection
+The result is returned to the frontend
+The frontend displays the output to the user
