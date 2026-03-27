@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GreenScan — Scan History</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.page-header { padding: 72px 40px 36px; max-width: 1180px; margin: 0 auto; }
+@media(max-width:600px){ .page-header { padding: 64px 20px 24px; } }
+
+.page-header h1 { font-family: var(--font-head); font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.page-header h1 span { color: var(--green); font-family: var(--font-serif); font-style: italic; }
+.page-header p { font-size: 0.82rem; color: var(--text2); margin-top: 10px; }
+
+/* ── CONTROLS ── */
+.controls-bar {
+  max-width: 1180px; margin: 0 auto; padding: 0 40px 24px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+}
+@media(max-width:600px){ .controls-bar { padding: 0 20px 20px; } }
+
+.search-wrap { position: relative; flex: 1; min-width: 160px; }
+.search-wrap input { padding-left: 34px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; }
+
+.filter-tabs { display: flex; gap: 4px; }
+.ftab {
+  font-size: 0.72rem; color: var(--muted2); text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 7px 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.ftab.on { background: var(--green-glow); border-color: var(--green-dim); color: var(--green); }
+
+.sort-select {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); font-family: var(--font-mono); font-size: 0.75rem;
+  padding: 7px 12px; border-radius: var(--radius-sm); cursor: pointer; outline: none;
+}
+
+/* ── SUMMARY ROW ── */
+.summary-row {
+  max-width: 1180px; margin: 0 auto; padding: 0 40px 28px;
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+@media(max-width:800px){ .summary-row { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:500px){ .summary-row { grid-template-columns: 1fr; padding: 0 20px 20px; } }
+
+.sum-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; position: relative; overflow: hidden;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.sum-card.vis { opacity: 1; transform: translateY(0); }
+.sum-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+}
+.sum-val { font-family: var(--font-head); font-size: 1.7rem; font-weight: 800; color: var(--green); }
+.sum-lbl { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+/* ── TIMELINE ── */
+.timeline-wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px 80px; }
+@media(max-width:600px){ .timeline-wrap { padding: 0 20px 60px; } }
+
+.timeline { display: flex; flex-direction: column; gap: 10px; }
+
+.scan-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px;
+  display: grid; grid-template-columns: 42px 1fr auto auto;
+  align-items: center; gap: 16px;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+  opacity: 0; transform: translateX(-14px);
+  animation: slideIn 0.4s ease forwards;
+}
+
+@keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+.scan-card:hover { border-color: var(--border2); background: var(--surface2); }
+.scan-card.detected-card { border-left: 3px solid var(--green-dim); }
+.scan-card.clean-card { border-left: 3px solid var(--border); }
+
+.scan-index {
+  font-family: var(--font-head); font-size: 0.75rem; font-weight: 700;
+  color: var(--muted); text-align: center; line-height: 1;
+}
+.scan-index span { display: block; font-size: 1.2rem; color: var(--text2); }
+
+.scan-name { font-size: 0.84rem; font-weight: 500; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scan-sub { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.scan-conf-wrap { display: flex; align-items: center; gap: 8px; }
+.scan-conf-bar { width: 64px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.scan-conf-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.scan-conf-val { font-size: 0.72rem; }
+
+.scan-time { font-size: 0.7rem; color: var(--muted); text-align: right; white-space: nowrap; }
+
+/* ── EMPTY ── */
+.empty-state { padding: 80px; text-align: center; color: var(--muted); }
+.empty-state .icon { font-size: 3rem; opacity: 0.2; margin-bottom: 14px; }
+
+/* ── PAGINATION ── */
+.pagination { display: flex; gap: 6px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.pag-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--muted2); font-family: var(--font-mono); font-size: 0.74rem;
+  padding: 7px 13px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+}
+.pag-btn:hover,.pag-btn.on { border-color: var(--green); color: var(--green); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.82); backdrop-filter: blur(10px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 28px;
+  max-width: 520px; width: 100%; position: relative;
+  animation: modalIn 0.25s ease;
+  max-height: 90vh; overflow-y: auto;
+}
+@keyframes modalIn { from { transform: scale(0.94) translateY(12px); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-head h3 { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; color: var(--green); }
+
+.modal-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 13px; background: var(--surface2); border-radius: 5px;
+  margin-bottom: 7px; font-size: 0.8rem;
+}
+.modal-key { color: var(--muted2); }
+.modal-val { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="nav-pulse"></div>GreenScan</a>
+  <div class="nav-links">
+    <a href="index.html">🔍 Detect</a>
+    <a href="history.html" class="active">📋 History</a>
+    <a href="admin.html">📊 Admin</a>
+    <a href="about.html">ℹ️ About</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+<div class="page-header reveal">
+  <h1>Scan <span>History</span></h1>
+  <p>All detection records — browse, filter, and review past scans</p>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary-row">
+  <div class="sum-card"><div class="sum-val" id="sv-total">—</div><div class="sum-lbl">Total Scans</div></div>
+  <div class="sum-card"><div class="sum-val" id="sv-det">—</div><div class="sum-lbl">Waste Found</div></div>
+  <div class="sum-card"><div class="sum-val" id="sv-clean">—</div><div class="sum-lbl">Clean</div></div>
+  <div class="sum-card"><div class="sum-val" id="sv-avg">—</div><div class="sum-lbl">Avg Confidence</div></div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls-bar reveal">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="input-field" id="search" placeholder="Search by filename…" oninput="applyFilters()"/>
+  </div>
+  <div class="filter-tabs">
+    <div class="ftab on" onclick="setFilter('all', this)">All</div>
+    <div class="ftab" onclick="setFilter('detected', this)">🗑 Waste</div>
+    <div class="ftab" onclick="setFilter('clean', this)">✅ Clean</div>
+  </div>
+  <select class="sort-select" id="sort-sel" onchange="applyFilters()">
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+    <option value="conf-hi">Highest Conf</option>
+    <option value="conf-lo">Lowest Conf</option>
+  </select>
+  <button class="btn-ghost" onclick="loadData()">↻</button>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap">
+  <div class="timeline" id="timeline">
+    <div class="empty-state"><div class="icon">⏳</div>Loading history…</div>
+  </div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Scan Detail</h3>
+      <button class="btn-icon" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://127.0.0.1:5002';
+let allData = [], filtered = [], activeFilter = 'all';
+const PAGE = 20; let page = 1;
+
+const obs = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('vis', e.isIntersecting)), {threshold:0.08});
+document.querySelectorAll('.reveal,.sum-card').forEach(el => obs.observe(el));
+
+async function loadData() {
+  try {
+    const r = await fetch(`${API}/history`);
+    allData = await r.json();
+    updateSummary();
+    applyFilters();
+  } catch(e) {
+    document.getElementById('timeline').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div>Cannot connect to API at ${API}</div>`;
+  }
+}
+
+function updateSummary() {
+  const t = allData.length;
+  const d = allData.filter(x=>x.detected).length;
+  const avg = t > 0 ? (allData.reduce((a,x)=>a+x.confidence,0)/t*100).toFixed(0)+'%' : '—';
+  document.getElementById('sv-total').textContent = t;
+  document.getElementById('sv-det').textContent = d;
+  document.getElementById('sv-clean').textContent = t-d;
+  document.getElementById('sv-avg').textContent = avg;
+}
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  page = 1;
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const sort = document.getElementById('sort-sel').value;
+  filtered = allData.filter(r => {
+    const matchF = activeFilter==='all' || (activeFilter==='detected'?r.detected:!r.detected);
+    const matchQ = r.image_name.toLowerCase().includes(q);
+    return matchF && matchQ;
+  });
+  if (sort==='oldest') filtered.sort((a,b)=>a.id-b.id);
+  else if (sort==='conf-hi') filtered.sort((a,b)=>b.confidence-a.confidence);
+  else if (sort==='conf-lo') filtered.sort((a,b)=>a.confidence-b.confidence);
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  if (filtered.length===0) { tl.innerHTML = `<div class="empty-state"><div class="icon">🔍</div>No records found</div>`; document.getElementById('pagination').innerHTML=''; return; }
+  const s=(page-1)*PAGE, items=filtered.slice(s,s+PAGE);
+  tl.innerHTML = items.map((r,i) => {
+    const pct=Math.round(r.confidence*100);
+    const col=pct>70?'var(--green)':pct>40?'var(--amber)':'var(--red)';
+    const relTime = getRelTime(r.timestamp);
+    const delay = i * 40;
+    return `<div class="scan-card ${r.detected?'detected-card':'clean-card'}" style="animation-delay:${delay}ms" onclick='openModal(${JSON.stringify(r)})'>
+      <div class="scan-index"><span>${r.detected?'🗑':'✅'}</span>#${r.id||s+i+1}</div>
+      <div>
+        <div class="scan-name">${r.image_name}</div>
+        <div class="scan-sub">
+          <span class="badge ${r.detected?'badge-detected':'badge-clean'}" style="font-size:0.65rem;padding:2px 8px">
+            <div class="badge-dot"></div>${r.detected?'Detected':'Clean'}
+          </span>
+          <div class="scan-conf-wrap">
+            <div class="scan-conf-bar"><div class="scan-conf-fill" style="width:${pct}%;background:${col}"></div></div>
+            <span class="scan-conf-val" style="color:${col}">${pct}%</span>
+          </div>
+        </div>
+      </div>
+      <div></div>
+      <div class="scan-time">${relTime}<br><span style="opacity:0.5">${r.timestamp||''}</span></div>
+    </div>`;
+  }).join('');
+  renderPag();
+}
+
+function getRelTime(ts) {
+  if (!ts) return '—';
+  const diff = Date.now() - new Date(ts).getTime();
+  const m = Math.floor(diff/60000), h=Math.floor(m/60), d=Math.floor(h/24);
+  if (d>0) return d+'d ago'; if (h>0) return h+'h ago'; if (m>0) return m+'m ago'; return 'Just now';
+}
+
+function renderPag() {
+  const total = Math.ceil(filtered.length/PAGE);
+  if (total<=1) { document.getElementById('pagination').innerHTML=''; return; }
+  let h=''; for(let i=1;i<=total;i++) h+=`<button class="pag-btn ${i===page?'on':''}" onclick="goPage(${i})">${i}</button>`;
+  document.getElementById('pagination').innerHTML=h;
+}
+
+function goPage(n) { page=n; renderTimeline(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function openModal(r) {
+  document.getElementById('modal-title').textContent = r.image_name;
+  const pct = Math.round(r.confidence*100);
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-row"><span class="modal-key">Status</span><span class="modal-val" style="color:${r.detected?'var(--green)':'var(--muted2)'}">${r.detected?'🗑 Waste Detected':'✅ Clean'}</span></div>
+    <div class="modal-row"><span class="modal-key">Confidence</span><span class="modal-val">${pct}%</span></div>
+    <div class="modal-row"><span class="modal-key">Timestamp</span><span class="modal-val">${r.timestamp||'—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Record ID</span><span class="modal-val">#${r.id}</span></div>
+    <div style="margin-top:16px">
+      <a href="index.html" class="btn-ghost" style="width:100%;justify-content:center;margin-top:6px">🔍 New Scan</a>
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) { if(e.target===document.getElementById('modal')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modal').classList.remove('open'); }
+
+function toast(msg,type='success') {
+  const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+loadData();
+</script>
+</body>
+</html>

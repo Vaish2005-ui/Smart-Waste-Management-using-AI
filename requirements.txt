@@ -1,0 +1,8 @@
+opencv-python
+ultralytics
+cvzone
+flask
+numpy
+pandas
+matplotlib
+seaborn

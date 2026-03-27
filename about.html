@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GreenScan — About</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.about-wrap { max-width: 1000px; margin: 0 auto; padding: 80px 40px 100px; }
+@media(max-width:600px){ .about-wrap { padding: 68px 20px 70px; } }
+
+/* ── HERO ── */
+.about-hero { text-align: center; margin-bottom: 72px; }
+.about-hero .tag { display:inline-flex; align-items:center; gap:8px; font-size:0.68rem; color:var(--green); letter-spacing:0.12em; text-transform:uppercase; padding:5px 14px; border:1px solid var(--green-dim); border-radius:3px; background:var(--green-glow); margin-bottom:22px; }
+.about-hero h1 { font-family:var(--font-head); font-size:clamp(2.8rem,6vw,4.5rem); font-weight:800; line-height:1; letter-spacing:-0.035em; margin-bottom:20px; }
+.about-hero h1 .it { font-family:var(--font-serif); font-style:italic; color:var(--green); }
+.about-hero p { font-size:0.92rem; color:var(--text2); line-height:1.8; max-width:560px; margin:0 auto; }
+
+/* ── DIVIDER ── */
+.divider { height:1px; background:linear-gradient(90deg,transparent,var(--border2),transparent); margin:48px 0; }
+
+/* ── SECTION ── */
+.section-h { font-family:var(--font-head); font-size:1.5rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:24px; display:flex; align-items:center; gap:12px; }
+.section-h .ico { font-size:1.2rem; }
+.section-h::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── MISSION ── */
+.mission-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:0; }
+@media(max-width:640px){ .mission-grid { grid-template-columns:1fr; } }
+
+.mission-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; overflow:hidden; transition: border-color 0.25s; }
+.mission-card:hover { border-color:var(--border2); }
+.mission-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--green-dim),transparent); opacity:0.5; }
+.mission-card .mc-icon { font-size:1.8rem; margin-bottom:12px; display:block; }
+.mission-card h3 { font-family:var(--font-head); font-size:0.95rem; font-weight:700; margin-bottom:8px; }
+.mission-card p { font-size:0.8rem; color:var(--text2); line-height:1.7; }
+
+/* ── TECH STACK ── */
+.tech-grid { display:flex; flex-wrap:wrap; gap:10px; }
+.tech-chip {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 16px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); font-size:0.8rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.tech-chip:hover { border-color:var(--green-dim); background:var(--green-glow2); }
+.tech-chip .ti { font-size:1.1rem; }
+.tech-chip strong { color:var(--green); font-size:0.75rem; display:block; letter-spacing:0.04em; }
+
+/* ── TEAM ── */
+.team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+@media(max-width:700px){ .team-grid { grid-template-columns:1fr; } }
+
+.team-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:28px 24px; text-align:center;
+  position:relative; overflow:hidden;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.team-card:hover { border-color:var(--green-dim); transform:translateY(-3px); }
+.team-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--green),transparent); opacity:0.4; }
+
+.avatar {
+  width:60px; height:60px; border-radius:50%;
+  background:var(--surface2); border:2px solid var(--border2);
+  margin:0 auto 14px; display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; transition: border-color 0.25s;
+}
+.team-card:hover .avatar { border-color:var(--green-dim); }
+
+.team-name { font-family:var(--font-head); font-size:1rem; font-weight:700; margin-bottom:4px; }
+.team-role { font-size:0.7rem; color:var(--green); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; }
+.team-resp { font-size:0.78rem; color:var(--text2); line-height:1.6; }
+
+.team-tasks { margin-top:10px; display:flex; flex-direction:column; gap:4px; }
+.tt { font-size:0.72rem; color:var(--muted2); display:flex; align-items:center; gap:6px; }
+.tt::before { content:'▸'; color:var(--green-dim); }
+
+/* ── FLOW ── */
+.flow-steps { display:flex; flex-direction:column; gap:0; }
+.flow-step { display:grid; grid-template-columns:40px 1fr; gap:16px; }
+.flow-line { display:flex; flex-direction:column; align-items:center; }
+.flow-dot { width:14px; height:14px; border-radius:50%; background:var(--green); border:2px solid var(--bg); box-shadow:0 0 10px rgba(57,255,122,0.4); flex-shrink:0; margin-top:3px; }
+.flow-connector { flex:1; width:2px; background:linear-gradient(to bottom,var(--green-dim),transparent); margin:4px 0; min-height:28px; }
+.flow-step:last-child .flow-connector { display:none; }
+.flow-content { padding-bottom:20px; }
+.flow-content h4 { font-family:var(--font-head); font-size:0.88rem; font-weight:700; margin-bottom:4px; color:var(--text); }
+.flow-content p { font-size:0.78rem; color:var(--text2); line-height:1.6; }
+
+/* ── API REFERENCE ── */
+.api-table { width:100%; border-collapse:collapse; }
+.api-table th { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; padding:10px 16px; border-bottom:1px solid var(--border); text-align:left; background:var(--surface2); }
+.api-table td { padding:11px 16px; font-size:0.78rem; border-bottom:1px solid rgba(31,50,31,0.4); }
+.api-table tr:last-child td { border:none; }
+.api-method { display:inline-block; padding:2px 8px; border-radius:3px; font-size:0.68rem; font-weight:700; letter-spacing:0.04em; }
+.method-post { background:rgba(57,255,122,0.15); color:var(--green); border:1px solid var(--green-dim); }
+.method-get { background:rgba(79,195,247,0.15); color:var(--blue); border:1px solid rgba(79,195,247,0.3); }
+.api-route { font-family:var(--font-mono); font-size:0.8rem; color:var(--text); }
+.api-desc { font-size:0.77rem; color:var(--text2); }
+
+/* ── CTA ── */
+.cta-box {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:40px; text-align:center;
+  position:relative; overflow:hidden;
+  background:linear-gradient(135deg, var(--surface) 0%, rgba(57,255,122,0.04) 100%);
+}
+.cta-box::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--green),transparent); opacity:0.6; }
+.cta-box h2 { font-family:var(--font-head); font-size:1.8rem; font-weight:800; margin-bottom:12px; }
+.cta-box h2 span { color:var(--green); }
+.cta-box p { color:var(--text2); font-size:0.85rem; margin-bottom:24px; }
+.cta-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="nav-pulse"></div>GreenScan</a>
+  <div class="nav-links">
+    <a href="index.html">🔍 Detect</a>
+    <a href="history.html">📋 History</a>
+    <a href="admin.html">📊 Admin</a>
+    <a href="about.html" class="active">ℹ️ About</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<div class="about-wrap">
+
+<!-- HERO -->
+<div class="about-hero reveal">
+  <div class="tag">🌿 Green Skills Project · 2025</div>
+  <h1>AI for a <span class="it">Cleaner</span><br>Planet</h1>
+  <p>GreenScan uses computer vision to automatically detect waste in images — making environmental monitoring faster, smarter, and accessible to everyone.</p>
+</div>
+
+<!-- MISSION -->
+<div class="section-h reveal"><span class="ico">🎯</span> Mission</div>
+<div class="mission-grid reveal">
+  <div class="mission-card">
+    <span class="mc-icon">🤖</span>
+    <h3>AI-Powered Detection</h3>
+    <p>Trained YOLOv8 model identifies garbage, waste bags, litter, and trash with real-time accuracy — from a phone photo or webcam frame.</p>
+  </div>
+  <div class="mission-card">
+    <span class="mc-icon">♻️</span>
+    <h3>Smart Waste Guidance</h3>
+    <p>Beyond detection — we tell you what to do. Disposal suggestions mapped per waste class help close the loop from detection to action.</p>
+  </div>
+  <div class="mission-card">
+    <span class="mc-icon">📍</span>
+    <h3>Location-Aware Logging</h3>
+    <p>Each scan is tagged with a location and timestamp. Build a geographic picture of cleanliness over time in your area.</p>
+  </div>
+  <div class="mission-card">
+    <span class="mc-icon">📊</span>
+    <h3>Data-Driven Insights</h3>
+    <p>Admin dashboard shows detection rates, confidence trends, and exportable reports for community and municipal action.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<div class="section-h reveal"><span class="ico">⚙️</span> How It Works</div>
+<div class="flow-steps reveal">
+  <div class="flow-step"><div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div><div class="flow-content"><h4>📤 Input</h4><p>User uploads an image or captures a live frame via device camera or DroidCam (phone as webcam over WiFi)</p></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div><div class="flow-content"><h4>🚀 API Call</h4><p>Frontend sends the image to Flask backend at <code style="color:var(--green);font-family:var(--font-mono);font-size:0.78rem">/detect</code> endpoint via multipart POST</p></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div><div class="flow-content"><h4>🧠 YOLO Inference</h4><p>YOLOv8 model runs on the image, drawing bounding boxes around detected waste classes with confidence scores</p></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div><div class="flow-content"><h4>💾 Database Storage</h4><p>Result is stored in SQLite — filename, detection status, confidence, timestamp — for audit trail and analytics</p></div></div>
+  <div class="flow-step"><div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div><div class="flow-content"><h4>📊 Result Display</h4><p>Frontend shows side-by-side original vs annotated image, confidence bars, disposal suggestions, and location tag</p></div></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- TECH STACK -->
+<div class="section-h reveal"><span class="ico">🛠️</span> Tech Stack</div>
+<div class="tech-grid reveal">
+  <div class="tech-chip"><span class="ti">🤖</span><div><strong>YOLO v8</strong>Object Detection Model</div></div>
+  <div class="tech-chip"><span class="ti">🐍</span><div><strong>Python 3.10+</strong>Backend Language</div></div>
+  <div class="tech-chip"><span class="ti">🌶️</span><div><strong>Flask</strong>REST API Server</div></div>
+  <div class="tech-chip"><span class="ti">👁️</span><div><strong>OpenCV</strong>Image Processing</div></div>
+  <div class="tech-chip"><span class="ti">🗃️</span><div><strong>SQLite</strong>Detection Database</div></div>
+  <div class="tech-chip"><span class="ti">🌐</span><div><strong>HTML/CSS/JS</strong>Frontend</div></div>
+  <div class="tech-chip"><span class="ti">📱</span><div><strong>DroidCam</strong>Phone as Webcam</div></div>
+  <div class="tech-chip"><span class="ti">📦</span><div><strong>cvzone</strong>Annotation Utility</div></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- TEAM -->
+<div class="section-h reveal"><span class="ico">👩‍💻</span> Team</div>
+<div class="team-grid reveal">
+  <div class="team-card">
+    <div class="avatar">👩‍💻</div>
+    <div class="team-name">Person 1</div>
+    <div class="team-role">Frontend UI</div>
+    <div class="team-resp">Main user interface design and layout</div>
+    <div class="team-tasks">
+      <div class="tt">Upload interface</div>
+      <div class="tt">Camera input UI</div>
+      <div class="tt">Result display</div>
+      <div class="tt">Responsive design</div>
+    </div>
+  </div>
+  <div class="team-card">
+    <div class="avatar">👩‍💻</div>
+    <div class="team-name">Person 2</div>
+    <div class="team-role">API Integration</div>
+    <div class="team-resp">Connecting frontend to backend API</div>
+    <div class="team-tasks">
+      <div class="tt">fetch() API calls</div>
+      <div class="tt">JSON response handling</div>
+      <div class="tt">Error states</div>
+      <div class="tt">Live status updates</div>
+    </div>
+  </div>
+  <div class="team-card">
+    <div class="avatar">👩‍💻</div>
+    <div class="team-name">Person 3</div>
+    <div class="team-role">Database & Admin</div>
+    <div class="team-resp">Data storage, history and reports</div>
+    <div class="team-tasks">
+      <div class="tt">SQLite integration</div>
+      <div class="tt">Admin dashboard</div>
+      <div class="tt">Filter & sort table</div>
+      <div class="tt">CSV export</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- API REFERENCE -->
+<div class="section-h reveal"><span class="ico">🔌</span> API Reference</div>
+<div class="panel reveal" style="overflow:hidden">
+  <table class="api-table">
+    <thead><tr><th>Method</th><th>Route</th><th>Description</th><th>Returns</th></tr></thead>
+    <tbody>
+      <tr><td><span class="api-method method-post">POST</span></td><td class="api-route">/detect</td><td class="api-desc">Upload image, run YOLO, save to DB</td><td class="api-desc">detected, detections[], confidence, annotated_image, timestamp</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td class="api-route">/history</td><td class="api-desc">Fetch all detection records</td><td class="api-desc">Array of {id, image_name, detected, confidence, timestamp}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="cta-box reveal">
+  <h2>Ready to <span>Detect?</span></h2>
+  <p>Upload your first image and see GreenScan in action.</p>
+  <div class="cta-btns">
+    <a href="index.html" class="btn-primary" style="text-decoration:none">🔍 Start Scanning</a>
+    <a href="admin.html" class="btn-ghost" style="text-decoration:none">📊 View Dashboard</a>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const obs=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('vis',e.isIntersecting)),{threshold:0.06});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

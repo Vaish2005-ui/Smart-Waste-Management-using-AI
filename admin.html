@@ -1,0 +1,383 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GreenScan — Admin Dashboard</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.page-header { padding: 72px 40px 32px; max-width: 1280px; margin: 0 auto; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+@media(max-width:600px){ .page-header{ padding:64px 20px 24px; } }
+.page-header h1 { font-family:var(--font-head); font-size:2.4rem; font-weight:800; letter-spacing:-0.03em; }
+.page-header h1 span { color:var(--green); font-family:var(--font-serif); font-style:italic; }
+.header-right { display:flex; gap:8px; flex-wrap:wrap; }
+
+/* ── KPI GRID ── */
+.kpi-grid { max-width:1280px; margin:0 auto; padding:0 40px 28px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+@media(max-width:900px){ .kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px){ .kpi-grid{ grid-template-columns:1fr; padding:0 20px 20px; } }
+
+.kpi {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px 22px; position:relative; overflow:hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.kpi:hover { border-color:var(--border2); box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+.kpi::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, var(--green-dim), transparent); }
+.kpi-icon { font-size:1.4rem; margin-bottom:8px; display:block; }
+.kpi-val { font-family:var(--font-head); font-size:2rem; font-weight:800; line-height:1; margin-bottom:4px; }
+.kpi-lbl { font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+.kpi-delta { font-size:0.7rem; margin-top:6px; }
+.kpi-delta.up { color:var(--green); }
+.kpi-delta.dn { color:var(--red); }
+.kpi.g .kpi-val { color:var(--green); }
+.kpi.a .kpi-val { color:var(--amber); }
+.kpi.r .kpi-val { color:var(--red); }
+.kpi.b .kpi-val { color:var(--blue); }
+
+/* ── CHARTS ROW ── */
+.charts-row { max-width:1280px; margin:0 auto; padding:0 40px 24px; display:grid; grid-template-columns:1.2fr 0.8fr; gap:20px; }
+@media(max-width:900px){ .charts-row { grid-template-columns:1fr; } }
+@media(max-width:600px){ .charts-row { padding:0 20px 20px; } }
+
+.chart-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; overflow:hidden; }
+.chart-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, var(--green-dim), var(--green) 50%, var(--green-dim), transparent); opacity:0.5; }
+.chart-head { font-size:0.65rem; color:var(--muted2); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+.chart-head::before { content:''; width:14px; height:1px; background:var(--green-dim); }
+
+/* Bar chart */
+.bar-chart-wrap { display:flex; align-items:flex-end; gap:8px; height:120px; }
+.bc-col { display:flex; flex-direction:column; align-items:center; gap:5px; flex:1; }
+.bc-bar { width:100%; border-radius:3px 3px 0 0; min-height:4px; transition:height 0.6s ease; position:relative; }
+.bc-bar.det { background:var(--green); opacity:0.85; }
+.bc-bar.cln { background:var(--border); }
+.bc-bar:hover::after {
+  content: attr(data-tip);
+  position:absolute; bottom:100%; left:50%; transform:translateX(-50%);
+  background:var(--surface3); border:1px solid var(--border2);
+  padding:4px 8px; border-radius:4px; font-size:0.65rem;
+  white-space:nowrap; margin-bottom:4px; color:var(--text2);
+  pointer-events:none; z-index:10;
+}
+.bc-lbl { font-size:0.58rem; color:var(--muted); white-space:nowrap; }
+
+/* Donut */
+.donut-wrap { display:flex; align-items:center; justify-content:center; gap:28px; flex-wrap:wrap; }
+.donut-legend { display:flex; flex-direction:column; gap:12px; }
+.leg-row { display:flex; align-items:center; gap:10px; font-size:0.78rem; }
+.leg-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+
+/* ── TABLE SECTION ── */
+.table-section { max-width:1280px; margin:0 auto; padding:0 40px 80px; }
+@media(max-width:600px){ .table-section { padding:0 20px 60px; } }
+
+.table-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+.table-controls .search-wrap { position:relative; flex:1; min-width:160px; }
+.table-controls .search-wrap input { padding-left:34px; }
+.si { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:0.85rem; pointer-events:none; }
+
+.tbl-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+.tbl-head { padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.tbl-title { font-size:0.65rem; color:var(--muted2); letter-spacing:0.12em; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+.tbl-title::before { content:''; width:12px; height:1px; background:var(--green-dim); }
+.tbl-count { font-size:0.72rem; color:var(--green); background:var(--green-glow); border:1px solid var(--green-dim); padding:3px 10px; border-radius:3px; }
+
+table { width:100%; border-collapse:collapse; }
+thead th { font-size:0.62rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; padding:12px 20px; border-bottom:1px solid var(--border); text-align:left; background:var(--surface2); font-weight:400; cursor:pointer; user-select:none; white-space:nowrap; }
+thead th:hover { color:var(--text2); }
+thead th .sort-arrow { margin-left:4px; opacity:0.4; }
+thead th.sorted .sort-arrow { opacity:1; color:var(--green); }
+
+tbody td { padding:12px 20px; font-size:0.78rem; border-bottom:1px solid rgba(31,50,31,0.5); vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover td { background:rgba(57,255,122,0.025); }
+
+.conf-mini-wrap { display:flex; align-items:center; gap:8px; }
+.conf-mini-bar { width:56px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+.conf-mini-fill { height:100%; border-radius:2px; }
+
+.act-btns { display:flex; gap:5px; }
+.act-btn {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--muted2); font-size:0.68rem; padding:4px 9px;
+  border-radius:3px; cursor:pointer; transition:all 0.2s; font-family:var(--font-mono);
+}
+.act-btn:hover { border-color:var(--green-dim); color:var(--green); }
+.act-btn.del:hover { border-color:var(--red); color:var(--red); }
+
+/* ── PAGINATION ── */
+.pagination { display:flex; gap:6px; padding:14px 20px; border-top:1px solid var(--border); justify-content:flex-end; flex-wrap:wrap; }
+.pag-btn { background:var(--surface2); border:1px solid var(--border); color:var(--muted2); font-family:var(--font-mono); font-size:0.72rem; padding:6px 12px; border-radius:4px; cursor:pointer; transition:all 0.2s; }
+.pag-btn:hover,.pag-btn.on { border-color:var(--green); color:var(--green); }
+
+/* ── EXPORT ── */
+.export-row { display:flex; gap:8px; }
+
+/* ── MODAL ── */
+.modal-overlay { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.82); backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); padding:28px; max-width:500px; width:100%; position:relative; animation:modalIn 0.25s ease; max-height:90vh; overflow-y:auto; }
+@keyframes modalIn { from{transform:scale(0.94) translateY(10px);opacity:0} to{transform:scale(1);opacity:1} }
+.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-head h3 { font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--green); }
+.mrow { display:flex; align-items:center; justify-content:space-between; padding:9px 13px; background:var(--surface2); border-radius:5px; margin-bottom:7px; font-size:0.8rem; }
+.mk { color:var(--muted2); }
+.mv { color:var(--text); font-weight:500; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="nav-pulse"></div>GreenScan</a>
+  <div class="nav-links">
+    <a href="index.html">🔍 Detect</a>
+    <a href="history.html">📋 History</a>
+    <a href="admin.html" class="active">📊 Admin</a>
+    <a href="about.html">ℹ️ About</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+<div class="page-header reveal">
+  <div>
+    <h1>Admin <span>Dashboard</span></h1>
+    <p style="font-size:0.8rem;color:var(--text2);margin-top:8px">System overview, analytics & data management</p>
+  </div>
+  <div class="header-right">
+    <button class="btn-ghost" onclick="loadAll()">↻ Refresh</button>
+    <button class="btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>
+  </div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-grid">
+  <div class="kpi g"><span class="kpi-icon">🔍</span><div class="kpi-val" id="k-total">—</div><div class="kpi-lbl">Total Scans</div><div class="kpi-delta up" id="k-today">— today</div></div>
+  <div class="kpi a"><span class="kpi-icon">🗑️</span><div class="kpi-val" id="k-det">—</div><div class="kpi-lbl">Waste Detected</div><div class="kpi-delta" id="k-det-rate">—% detection rate</div></div>
+  <div class="kpi b"><span class="kpi-icon">✅</span><div class="kpi-val" id="k-clean">—</div><div class="kpi-lbl">Clean Images</div></div>
+  <div class="kpi r"><span class="kpi-icon">📈</span><div class="kpi-val" id="k-avgconf">—</div><div class="kpi-lbl">Avg Confidence</div></div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-row reveal" style="transition-delay:0.1s">
+  <!-- BAR: recent activity -->
+  <div class="chart-panel">
+    <div class="chart-head">Recent Detections (Last 10)</div>
+    <div class="bar-chart-wrap" id="bar-chart"></div>
+  </div>
+  <!-- DONUT: breakdown -->
+  <div class="chart-panel">
+    <div class="chart-head">Scan Breakdown</div>
+    <div class="donut-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="46" fill="none" stroke="var(--border)" stroke-width="18"/>
+        <circle id="donut-arc" cx="60" cy="60" r="46" fill="none" stroke="var(--green)" stroke-width="18"
+          stroke-dasharray="0 289" stroke-dashoffset="72"
+          style="transition:stroke-dasharray 0.9s ease;transform:rotate(-90deg);transform-origin:center"/>
+        <text id="donut-pct" x="60" y="65" text-anchor="middle" font-family="Syne" font-size="15" font-weight="800" fill="var(--green)">0%</text>
+      </svg>
+      <div class="donut-legend">
+        <div class="leg-row"><div class="leg-dot" style="background:var(--green)"></div><span id="leg-det">Detected: 0</span></div>
+        <div class="leg-row"><div class="leg-dot" style="background:var(--border)"></div><span id="leg-cln">Clean: 0</span></div>
+        <div class="leg-row" style="margin-top:4px;font-size:0.72rem;color:var(--muted)"><span id="leg-rate">Rate: 0%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-section reveal" style="transition-delay:0.15s">
+  <div class="table-controls">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input class="input-field" id="tbl-search" placeholder="Search filename…" oninput="applyFilters()"/>
+    </div>
+    <select class="sort-select" id="tbl-filter" onchange="applyFilters()">
+      <option value="all">All</option>
+      <option value="det">Detected</option>
+      <option value="clean">Clean</option>
+    </select>
+    <select class="sort-select" id="tbl-sort" onchange="applyFilters()">
+      <option value="id-desc">Newest</option>
+      <option value="id-asc">Oldest</option>
+      <option value="conf-desc">Highest Conf</option>
+      <option value="conf-asc">Lowest Conf</option>
+    </select>
+  </div>
+
+  <div class="tbl-card">
+    <div class="tbl-head">
+      <div class="tbl-title">Detection Log</div>
+      <div class="tbl-count" id="tbl-count">0 records</div>
+    </div>
+    <div id="tbl-wrap">
+      <div style="padding:50px;text-align:center;color:var(--muted)">Loading…</div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Record Detail</h3>
+      <button class="btn-icon" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://127.0.0.1:5002';
+let allData=[], filtered=[];
+const PG=15; let page=1;
+
+const obs = new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('vis',e.isIntersecting)),{threshold:0.06});
+document.querySelectorAll('.reveal,.kpi').forEach(el=>obs.observe(el));
+
+async function loadAll() {
+  try {
+    const r = await fetch(`${API}/history`);
+    allData = await r.json();
+    updateKPIs();
+    buildCharts();
+    applyFilters();
+    toast('✅ Data refreshed', 'success');
+  } catch(e) {
+    document.getElementById('tbl-wrap').innerHTML = `<div style="padding:60px;text-align:center;color:var(--muted)">⚠ Cannot reach Flask API at ${API}</div>`;
+  }
+}
+
+function updateKPIs() {
+  const n = allData.length;
+  const det = allData.filter(x=>x.detected).length;
+  const avg = n>0 ? (allData.reduce((a,x)=>a+x.confidence,0)/n*100).toFixed(1)+'%' : '—';
+  const today = allData.filter(x=> x.timestamp && x.timestamp.startsWith(new Date().toISOString().slice(0,10))).length;
+  const rate = n>0 ? Math.round(det/n*100) : 0;
+
+  document.getElementById('k-total').textContent = n;
+  document.getElementById('k-det').textContent = det;
+  document.getElementById('k-clean').textContent = n-det;
+  document.getElementById('k-avgconf').textContent = avg;
+  document.getElementById('k-today').textContent = today + ' today';
+  const kdr = document.getElementById('k-det-rate');
+  kdr.textContent = rate+'% detection rate';
+  kdr.className = 'kpi-delta ' + (rate>50?'up':'dn');
+}
+
+function buildCharts() {
+  // Bar chart (last 10)
+  const recent = [...allData].slice(0,10).reverse();
+  const bc = document.getElementById('bar-chart');
+  const maxC = Math.max(...recent.map(r=>r.confidence), 0.01);
+  bc.innerHTML = recent.map(r => {
+    const h = Math.max(8, Math.round((r.confidence/maxC)*100));
+    const lbl = r.timestamp ? r.timestamp.split(' ')[0].slice(5) : '—';
+    return `<div class="bc-col">
+      <div class="bc-bar ${r.detected?'det':'cln'}" style="height:${h}px" data-tip="${lbl}: ${Math.round(r.confidence*100)}%"></div>
+      <div class="bc-lbl">${lbl}</div>
+    </div>`;
+  }).join('');
+
+  // Donut
+  const n=allData.length, det=allData.filter(x=>x.detected).length;
+  const circ=2*Math.PI*46;
+  const arc=n>0?(det/n)*circ:0;
+  document.getElementById('donut-arc').setAttribute('stroke-dasharray',`${arc.toFixed(1)} ${circ.toFixed(1)}`);
+  const r=n>0?Math.round(det/n*100):0;
+  document.getElementById('donut-pct').textContent=r+'%';
+  document.getElementById('leg-det').textContent=`Detected: ${det}`;
+  document.getElementById('leg-cln').textContent=`Clean: ${n-det}`;
+  document.getElementById('leg-rate').textContent=`Rate: ${r}%`;
+}
+
+function applyFilters() {
+  const q=document.getElementById('tbl-search').value.toLowerCase();
+  const f=document.getElementById('tbl-filter').value;
+  const s=document.getElementById('tbl-sort').value;
+  filtered=[...allData].filter(r=>{
+    const mq=r.image_name.toLowerCase().includes(q);
+    const mf=f==='all'||(f==='det'?r.detected:!r.detected);
+    return mq&&mf;
+  });
+  if(s==='id-asc') filtered.sort((a,b)=>a.id-b.id);
+  else if(s==='conf-desc') filtered.sort((a,b)=>b.confidence-a.confidence);
+  else if(s==='conf-asc') filtered.sort((a,b)=>a.confidence-b.confidence);
+  page=1;
+  renderTable();
+}
+
+function renderTable() {
+  const tc=document.getElementById('tbl-count');
+  tc.textContent=filtered.length+' record'+(filtered.length!==1?'s':'');
+  if(filtered.length===0){document.getElementById('tbl-wrap').innerHTML='<div style="padding:50px;text-align:center;color:var(--muted)">No records found</div>';document.getElementById('pagination').innerHTML='';return;}
+  const s=(page-1)*PG, items=filtered.slice(s,s+PG);
+  document.getElementById('tbl-wrap').innerHTML=`<table><thead><tr>
+    <th>#</th><th>Filename</th><th>Status</th><th>Confidence</th><th>Timestamp</th><th>Actions</th>
+  </tr></thead><tbody>${items.map((r,i)=>{
+    const pct=Math.round(r.confidence*100);
+    const col=pct>70?'var(--green)':pct>40?'var(--amber)':'var(--red)';
+    return `<tr>
+      <td style="color:var(--muted);font-size:0.7rem">${r.id||s+i+1}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.image_name}</td>
+      <td><span class="badge ${r.detected?'badge-detected':'badge-clean'}" style="font-size:0.68rem">
+        <div class="badge-dot"></div>${r.detected?'Detected':'Clean'}
+      </span></td>
+      <td><div class="conf-mini-wrap">
+        <div class="conf-mini-bar"><div class="conf-mini-fill" style="width:${pct}%;background:${col}"></div></div>
+        <span style="font-size:0.72rem;color:${col}">${pct}%</span>
+      </div></td>
+      <td style="color:var(--muted);font-size:0.72rem;white-space:nowrap">${r.timestamp||'—'}</td>
+      <td><div class="act-btns">
+        <button class="act-btn" onclick='openModal(${JSON.stringify(r)})'>View</button>
+      </div></td>
+    </tr>`;}).join('')}</tbody></table>`;
+  renderPag();
+}
+
+function renderPag(){
+  const tot=Math.ceil(filtered.length/PG);
+  if(tot<=1){document.getElementById('pagination').innerHTML='';return;}
+  let h='';
+  if(page>1) h+=`<button class="pag-btn" onclick="goPage(${page-1})">‹</button>`;
+  for(let i=Math.max(1,page-2);i<=Math.min(tot,page+2);i++) h+=`<button class="pag-btn ${i===page?'on':''}" onclick="goPage(${i})">${i}</button>`;
+  if(page<tot) h+=`<button class="pag-btn" onclick="goPage(${page+1})">›</button>`;
+  document.getElementById('pagination').innerHTML=h;
+}
+
+function goPage(n){page=n;renderTable();window.scrollTo({top:400,behavior:'smooth'});}
+
+function openModal(r){
+  document.getElementById('modal-title').textContent=r.image_name;
+  const pct=Math.round(r.confidence*100);
+  document.getElementById('modal-body').innerHTML=`
+    <div class="mrow"><span class="mk">Status</span><span class="mv" style="color:${r.detected?'var(--green)':'var(--muted2)'}">${r.detected?'🗑 Waste Detected':'✅ Clean'}</span></div>
+    <div class="mrow"><span class="mk">Confidence</span><span class="mv">${pct}%</span></div>
+    <div class="mrow"><span class="mk">Timestamp</span><span class="mv">${r.timestamp||'—'}</span></div>
+    <div class="mrow"><span class="mk">Record ID</span><span class="mv">#${r.id}</span></div>
+    <div class="mrow"><span class="mk">Detected Bool</span><span class="mv">${r.detected}</span></div>`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(e){if(e.target===document.getElementById('modal'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('modal').classList.remove('open');}
+
+function exportCSV(){
+  if(!allData.length){toast('No data to export','error');return;}
+  const header='ID,Filename,Detected,Confidence,Timestamp\n';
+  const rows=allData.map(r=>`${r.id},"${r.image_name}",${r.detected},${r.confidence},"${r.timestamp||''}"`).join('\n');
+  const blob=new Blob([header+rows],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='greenscan_export.csv';a.click();
+  toast('⬇ CSV exported!','success');
+}
+
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3200);}
+
+loadAll();
+</script>
+</body>
+</html>
