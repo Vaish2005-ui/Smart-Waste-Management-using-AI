@@ -77,5 +77,3 @@ python GarbageDetectorAPI.py
 - IoT-based waste monitoring
 - Improved model accuracy
 
-## 📌 Note
-If model file is not included, download it and place it inside the `w
